@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
-  base: '/daily-astronomy/',
+  base: '/astronomy-daily-pics/',
 })
