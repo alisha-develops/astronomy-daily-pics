@@ -2,10 +2,10 @@
 hi! in this guide we will be learning how to use javascript to fetch an API. this is beginner friendly but covers some intermediate concepts like setting up vite and deploying with github actions. in this project we will be using a public API safely with vite and deploying it live on github pages.
 
 ## what exactly will we build? 
-a website that fetches nasa's astronomy picture of the day and displays the title, image (or video), and explanation. ot automatically updates every day with a new image.
-> **note:** this is a simple project meant to teach you the concept of working with APIs. you are welcome to use this as a learning reference but please do not submit an exact copy - make it your own by changing the design, adding features, or using a different API.
+a website that fetches nasa's astronomy picture of the day and displays the title, image (or video), and explanation. it automatically updates every day with a new image.
+> **note:** this is a simple project meant to teach you the concept of working with APIs. i have intentionally kept this project as simple as possible and avoided adding extra features to leave those modifications for you. you are welcome to use this as a learning reference but please do not submit an exact copy - make it your own by changing the design, adding features, or using a different API.
 
-i have divided this guide into 12 small stages so nothing gets tangled, and have attached some resources below.
+i have divided this guide into small stages so nothing gets tangled, and have attached some resources below. 
 ## prerequisites
  
 - [Node.js](https://nodejs.org) version 20 or higher installed
@@ -13,13 +13,19 @@ i have divided this guide into 12 small stages so nothing gets tangled, and have
 - a code editor like [VS Code](https://code.visualstudio.com)
 - a free nasa API key from [api.nasa.gov](https://api.nasa.gov)
 
+## why are we using vite instead of plain html/css/js?
+great question. you could technically write this in a plain html file, but you would immediately run into a problem, where do you put your API key?
+
+if you paste it directly into your javascript file and push to github, anyone can see it. that's bad practice even for a free API. vite solves this with `.env` files and `import.meta.env`, which is the standard modern workflow for frontend projects. it also gives you a real local server so your API requests actually work, and handles building and deploying your code to github pages.
 
 ## create a vite project
-open folder in your code editor in which you will be making your project, open terminal and run:
+open the folder where you want to create your project in vs code, open the terminal and run:
+
 ```bash
 npm create vite@latest .
 ```
-the dot up here tells terminal to create vite in the existing opened folder.
+
+the `.` tells the terminal to create vite in the current folder instead of making a new subfolder.
 
 when it asks questions, pick:
 - framework: **Vanilla**
@@ -44,21 +50,52 @@ press ctrl + c to stop the server for now.
 > **important:** always use the localhost URL shown in your terminal to view your project. never open `index.html` directly in the browser or use the VS Code live preview extension. those don't understand vite's module system and your API key will not work.
  
 ## clean out the scaffold files
- 
-vite gives you demo files you don't need. delete these:
+
+vite gives you a demo to show it works. every developer deletes these files and starts fresh with their own code because these files are only included as a template to prove your server is working.
  
 - `src/counter.js`
 - `src/javascript.svg`
 - `public/vite.svg`
----
-## replace index.html
+- remove boiled code from `./src/main.js` and ./src/style.css`
+
+## get and store your API key safely
+go to [api.nasa.gov](https://api.nasa.gov), fill out the basic form and they will email you a free key instantly. once you have it, create a `.env` file in the root of your project (same level as `package.json`).
+```bash
+VITE_NASA_API_KEY=your_actual_key_here
+```
+replace `your_actual_key_here` with the key you got from [api.nasa.gov](https://api.nasa.gov).
+
+two things you should keep in mind:
+- the variable name **must start with `VITE_`** - vite only exposes variables with that prefix to your frontend code
+- no spaces around the `=`
+
+also, create `.env.example` (this one you do push to GitHub so others know what variables are needed):
+![screenshot](./guideassets/.env.example.png)
+
+**after creating `.env`, always restart the vite server.** it only reads `.env` at startup, not on hot reload. press `Ctrl+C` in terminal then `npm run dev` again.
+
+make sure your `.gitignore` file has these three lines:
+```
+.env
+node_modules
+dist
+```
+
+this tells git to never upload your real API key, the `node_modules` folder (too large, reinstalled via `npm install`), or the `dist` folder (auto generated on build).
+
+that was all the setup you needed before writing any code. make sure your folder looks something like this before moving on:
+![screenshot](./guideassets/filestructure.png)
+
+**now the fun part! let's write some code :D**
+
+## make sure your index.html looks like this:
 ```html
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NASA Daily</title> <!--put your project title here. in my case, im calling it nasa daily.-->
+    <title>astronomy</title> <!--put your project title here. in my case, im calling it astronomy.-->
   </head>
   <body>
     <div id="app"></div>
@@ -66,13 +103,11 @@ vite gives you demo files you don't need. delete these:
   </body>
 </html>
 ```
-the `<div id="app">` is an empty box. your JavaScript will fill it with content. the script tag loads your code.
+this is the base structure for any vite vanilla js project. the only things you will ever change are the `<title>` and what goes inside `<body>`. the `<div id="app">` is just an empty box right now. your javascript will fill it with content at runtime. if you check the elements tab in your browser devtools after the page loads, you will see it filled with the title, image and explanation. even though your html file just says `<div id="app"></div>`. that's javascript doing its job.
 
 also, notice the `type="module"` in the script tag - this tells the browser to treat your javascript as a modern ES module. without it, `import.meta.env` won't work and your API key will show as `undefined`.
 
-basically, vite uses ES module syntax under the hood. `type="module"` enables features like `import`, `export`, and `import.meta` in the browser. it also automatically defers the script, meaning it waits for the HTML to fully load before running -- which is why your `document.querySelector("#app")` always finds the element.
-
-the reason why i asked you to add this code is because this is the base structure for any vite vanilla js project. the only things you will ever change are the `<title>` and what goes inside `<body>`.
+basically, vite uses ES module syntax under the hood. `type="module"` enables features like `import`, `export`, and `import.meta` in the browser. it also automatically defers the script, meaning it waits for the HTML to fully load before running - which is why your `document.querySelector("#app")` always finds the element.
 
 once you have the basics working, you can extend this by adding a search bar, date picker, or styling with css. the core fetch pattern stays the same.
 
@@ -86,40 +121,56 @@ for example if you wanted to add a date picker to view past NASA images, you wou
 and update `main.js` to use the selected date:
 
 ```javascript
-const date = document.querySelector("#date-picker").value;
+const date = document.querySelector("#datepicker").value;
 fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}&date=${date}`)
 ```
 
 but for this guide we are keeping it simple and focusing on the core concept. modifications are up to you!
 
-## javascript
+## writing javascript code
 
-the entire logic of this project lives in `src/main.js`. let's build it step by step so you understand what every line does.
+this is going to be the most fun part. the entire logic of this project lives in `src/main.js`. let's build it step by step. i would highly suggest completing the tasks given below as they will help solidify your concepts. and honestly, when we review your projects and see you actually tried the tasks, it makes our day!
+before we write a single line of code, let's think about something.
 
-### step 1: get your api key
+imagine you are ordering food from a restaurant. you place your order, the kitchen prepares it, and then it gets delivered to you. you don't just stand frozen at the counter waiting. you sit down, maybe scroll your phone, and when the food arrives you eat it.
+
+fetching data from an API works exactly the same way.
+
+**task 1:** before reading further, try answering this in your own words. how do you think fetching data from the internet works in javascript? don't worry about being technically correct, just think about it logically. write it down somewhere.
+
+here is the rough flow:
+
+1. you send a **request** to the API with a URL
+2. the API processes it and sends back a **response**
+3. you **convert** that **response** into **usable data**
+4. you **display** it on the page
+
+keep this flow in your head as you go through the tasks below. every step of the code maps directly to one of these four steps. by the end of the javascript section you will have implemented all four yourself.
+
+### import your api key
 
 ```javascript
 const API_KEY = import.meta.env.VITE_NASA_API_KEY;
 ```
 
-`import.meta.env` is how vite gives your code access to variables stored in `.env`. the `VITE_` prefix is required - vite only exposes variables that start with it. without this your key will be `undefined`.
+`import.meta.env` is how vite gives your code access to variables stored in `.env`- the `VITE_` prefix is required - vite only exposes variables that start with it. without this your key will be `undefined`.
 
-### step 2: show something while loading
+### show something while loading
+before we write any fetch code, try **task 2**  first:
+open `src/main.js` and try to display the text "hello world" inside the `#app` div using javascript. don't look anything up yet, just give it a try and see what happens.
 
+`document.querySelector("#app")` finds the element with `id="app"` in your html. `.innerHTML` sets the content inside it. we will show "loading..." in our case immediately so the page is never blank while waiting for the api.
 ```javascript
 document.querySelector("#app").innerHTML = "<p>loading...</p>";
 ```
-
-`document.querySelector("#app")` finds the element with `id="app"` in your html. `.innerHTML` sets the content inside it. we show "loading..." immediately so the page is never blank while waiting for the api.
 ![screenshot](./guideAssets/2026-05-25%20(5).png)
 
-### step 3: fetch the data
-
+### fetch the data
+`fetch` makes a network request to the nasa api in the background.
 ```javascript
 fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`)
 ```
-
-`fetch` makes a network request to the nasa api in the background. notice the backticks instead of quotes - that's because we're embedding `${API_KEY}` inside the url. the `${}` syntax replaces the variable with its actual value at runtime.
+ notice the backticks instead of quotes. that's because we're embedding `${API_KEY}` inside the url. the `${}` syntax replaces the variable with its actual value at runtime.
 
 for example:
 ```javascript
@@ -130,25 +181,42 @@ console.log("hello ${name}") // prints: hello ${name}
 
 regular quotes treat `${}` as plain text. backticks treat it as code.
 
-### step 4: handle the response
+### handle the response
+now that we have fetched the data, we need to handle what comes back. before i show you how, let's think about it:
 
+**task 3:** `fetch` gives you back a raw response. kind of like receiving a letter that's still in the envelope. what do you think you need to do before you can actually read the data inside it? give it a thought, then try writing it yourself.
+
+once you have tried, here is how it works:
 ```javascript
 .then(response => response.json())
 ```
 
-`fetch` returns a promise -- meaning it runs in the background while the rest of the page loads. `.then` runs when it finishes. `response.json()` converts the raw response into a javascript object you can work with.
+`fetch` returns a promise, meaning it runs in the background while the rest of the page loads. `.then` runs when it finishes. `response.json()` converts the raw response into a javascript object you can work with.
 
-### step 5: use the data
+### use the data
+now you actually have the data in your hands. but before i show you what to do with it, here is a task:
+
+**task 4:** you have `data` available now, which is the object nasa sent back. how do you think you would display just the title on the page? remember what you learned in task 2 about `innerHTML`. give it a try before moving on.
+
+once you have tried, here is what `data` actually looks like. open your browser console and add `console.log(data)` to see everything inside it:
 
 ```javascript
 .then(data => {
+    console.log(data);
+})
 ```
+>**note:** these `.then()` blocks cannot float around by themselves. they must be chained directly onto the back of your `fetch()` statement like a continuous pipeline as shown in the picture below
 
-`data` is the object nasa sent back. open your browser console and `console.log(data)` to see everything inside it. you will see fields like `data.title`, `data.url`, `data.explanation`, and `data.media_type`. it should look something like this:
+you will see fields like `data.title`, `data.url`, `data.explanation`, and `data.media_type`. it should look something like this:
 
 ![screenshot](./guideAssets/2026-05-25%20(6).png)
+the fields we care about are:
+- `data.title`: the name of today's image
+- `data.url`: the image or video URL
+- `data.explanation`: the description
+- `data.media_type`: tells us if it's `"image"` or `"video"`
 
-now we will focus on bringing this data on our site page. remove console.log and pause for a second and think - how would you put `data.title` inside `#app`?
+now we will focus on bringing this data on our site page which we can call our **task 5**. remove `console.log` and pause for a second and think - how would you put `data.title` inside `#app`?
 
 i want you to try this yourself before seeing the guide further. 
 
@@ -160,12 +228,12 @@ i hope you must've tried it yourself, and if you were successful it would have l
     document.querySelector("#app").innerHTML = `${data.title}`;
 })
 ```
-`document.querySelector("#app")` finds the element with `id="app"` in your html - the empty div we created earlier. `.innerHTML` then fills it with whatever string you give it. since we are using backticks we can embed `${data.title}` directly inside the string, which gets replaced with the actual title nasa sent back. so instead of seeing `${data.title}` on the page, you see whatever today's image is called. "Thackeray's Globules" in my case. `<h1>` is normally a html tag that makes te biggest heading.
+`document.querySelector("#app")` finds the element with `id="app"` in your html, the empty div we created earlier. `.innerHTML` then fills it with whatever string you give it. since we are using backticks we can embed `${data.title}` directly inside the string, which gets replaced with the actual title nasa sent back. so instead of seeing `${data.title}` on the page, you see whatever today's image is called. "Thackeray's Globules" in my case. `<h1>` is normally a html tag that makes the biggest heading.
 
 
 ![screenshot](./guideAssets/2026-05-25%20(7).png)
 
-**task:** try adding `data.url` as an image and `data.explanation` as a paragraph yourself in the same place where `data.title` exists, before scrolling down. 
+**task 6:** try adding `data.url` as an image and `data.explanation` as a paragraph yourself in the same place where `data.title` exists, before scrolling down. 
 
 **hint:** use the same `${}` syntax and the html tags you already know - `<img>` and `<p>`.
 
@@ -187,9 +255,9 @@ it must be looking like this:
 you can include whatever you want depending on your api and idea.
 the image seems huge right now but dont worry that is something we will fix eventually with css styling.
 
-### step 6: handle image or video
+###  handle image or video
 
-if you were able to make it here by implementing each task on your own, then you should be proud of yourself for building the whole thing yourself! now one important thing in our project is that nasa sometimes sends a video instead of an image. so `<img src="${data.url}" />` won't usually work. to solve this problem we handle it with an `if` statement. before moving forward, i want you to give it a try yourself. remember `data.media_type` tells you if it's "image" or "video". try writing an if statement to show either an `<img>` or a `<video>` tag. it doesn't really matter if you didn't write the correct code at all, what matters is that you tried :D
+if you were able to make it here by implementing each task on your own, then you should be proud of yourself for building the whole thing yourself! now one important thing in our project is that nasa sometimes sends a video instead of an image. so `<img src="${data.url}"/>` won't always work. to solve this problem we handle it with an `if` statement. before moving forward, i want you to give it a try yourself. remember `data.media_type` tells you if it's "image" or "video". try writing an if statement to show either an `<img>` or a `<video>` tag. it doesn't really matter if you didn't write the correct code at all, what matters is that you tried :D
 
 here is how you should give it a try yourself:
 ```javascript
@@ -254,7 +322,7 @@ document.querySelector("#app").innerHTML = `
 ```
 
 ![screenshot](./guideAssets/2026-05-25%20(11).png)
-see the difference? i made the size of image small by using inline styles: `style="width: 300px; height: 200px;` to show everything at once . so don't get confused :)
+see the difference? i made the size of image small by using inline styles: `style="width: 300px; height: 200px;"` to show everything at once . so don't get confused :)
 
 ### handle errors
 
@@ -264,10 +332,12 @@ see the difference? i made the size of image small by using inline styles: `styl
 });
 ```
 
-`.catch` runs if anything goes wrong -- no internet, wrong api key, api is down. without this, errors fail silently and you just see a blank page with no idea why.
+`.catch` runs if anything goes wrong. no internet, wrong api key, api is down. without this, errors fail silently and you just see a blank page with no idea why.
 
 ### the complete code
+if you were able to make it here then congrats! you have built your own (probably very first javascript code) yourself! you should sip some H2O now XD
 
+this is how your complete code should look:
 ```javascript
 const API_KEY = import.meta.env.VITE_NASA_API_KEY;
 
@@ -294,3 +364,4 @@ fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`)
     document.querySelector("#app").innerHTML = `<p>Error: ${err.message}</p>`;
   });
 ```
+now that your javascript is working, let's make it look good. head over to `src/style.css` and let's add some styling.
