@@ -365,3 +365,24 @@ fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`)
   });
 ```
 now that your javascript is working, let's make it look good. head over to `src/style.css` and let's add some styling.
+
+## styling with css
+
+### body
+`margin: 0` removes the default white gap browsers add around the page. `min-height: 100vh` means the body is at least as tall as the screen. `vh` stands for viewport height. `position: relative` is needed so the side decorations know where to position themselves.
+
+### body::before and body::after
+these are called **pseudo-elements** -- they are fake elements that css creates without you writing any html. `content: ''` is required to make them appear even though they have no text. `position: fixed` keeps them stuck to the sides even when you scroll. `z-index: -1` puts them behind all your content.
+
+### clip-path: polygon()
+this is the fun part. `clip-path` cuts an element into any shape you define using coordinates. `polygon()` takes a list of x% y% points and draws a shape through them. the zigzag effect comes from alternating between `85% 2.5%` and `100% 5%` -- one point is slightly inward, the next is at the full edge, creating the zigzag pattern.
+
+### @media (max-width: 600px)
+this is a **media query** -- it applies styles only when the screen is narrower than 600px, meaning phones. we hide the side decorations on mobile so they don't overlap the content on small screens.
+
+### google fonts
+add this in your `index.html` inside `<head>` to load your fonts:
+```html
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Black+Ops+One&display=swap" rel="stylesheet">
+```
+then use them in css with `font-family: 'Orbitron', sans-serif`. the `sans-serif` at the end is a fallback -- if google fonts fails to load, the browser uses its default sans-serif font instead.
