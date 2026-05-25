@@ -6,7 +6,7 @@ fetch(`https://api.nasa.gov/planetary/apod?api_key=${API_KEY}`).then ( response 
     let media;
      
     if (data.media_type === "image") {
-    media = `<img src="${data.url}"/>`
+    media = `<img src="${data.url}" style="width: 300px; height: 200px;"/>`
 } else {
     media = `<video src="${data.url}" controls></video>`
 }
@@ -16,5 +16,3 @@ document.querySelector("#app").innerHTML= `
     ${media}
     <p>${data.explanation}</p>`;
 })
-
-
