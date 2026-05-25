@@ -70,7 +70,7 @@ two things you should keep in mind:
 - no spaces around the `=`
 
 also, create `.env.example` (this one you do push to GitHub so others know what variables are needed):
-![screenshot](./guideassets/.env.example.png)
+![screenshot](./guideAssets/.env.example.png)
 
 **after creating `.env`, always restart the vite server.** it only reads `.env` at startup, not on hot reload. press `Ctrl+C` in terminal then `npm run dev` again.
 
@@ -84,7 +84,7 @@ dist
 this tells git to never upload your real API key, the `node_modules` folder (too large, reinstalled via `npm install`), or the `dist` folder (auto generated on build).
 
 that was all the setup you needed before writing any code. make sure your folder looks something like this before moving on:
-![screenshot](./guideassets/filestructure.png)
+![screenshot](./guideAssets/filestructure.png)
 
 **now the fun part! let's write some code :D**
 
