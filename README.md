@@ -26,4 +26,4 @@ if you want to spin up your own workspace based on my project, make sure you hav
 ready to build your own?
 if you are a track participant looking to learn how to do all of this step-by-step, i wrote a massive, 12-stage breakdown covering every single line of code and folder setup. i even included mini-tasks to help test your brain along the way!
 
-**go check out my full tutorial file here: [`guide.md`](./guide.md)**
+**go check out my full tutorial file here: [`GUIDE.md`](./GUIDE.md)**
