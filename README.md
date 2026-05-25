@@ -26,11 +26,4 @@ if you want to spin up your own workspace based on my project, make sure you hav
 ready to build your own?
 if you are a track participant looking to learn how to do all of this step-by-step, i wrote a massive, 12-stage breakdown covering every single line of code and folder setup. i even included mini-tasks to help test your brain along the way!
 
-go check out my full tutorial file here: GUIDE.md
-👉 **Go check out my full tutorial file here: [`guide.md`](./guide.md)**
-
----
-
-## 🛑 Note on Submissions & Clones
-
-If you are building this for your Stardance milestone checkpoint, please **do not just copy-paste or clone my exact repository.** I left the styling super basic and skipped a ton of extra features on purpose so *you* can make it your own! To pass review, change up the CSS design entirely, add a date picker to fetch past historical space photos, add a randomizer button, or use a completely different public API. Use my code to learn the core pattern, and then build something unique!
+**go check out my full tutorial file here: [`guide.md`](./guide.md)**
