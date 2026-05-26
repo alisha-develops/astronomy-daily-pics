@@ -368,21 +368,103 @@ now that your javascript is working, let's make it look good. head over to `src/
 
 ## styling with css
 
+before we get into the interesting stuff, here is a quick refresher on the basics. if you already know these, skip ahead!
+
+| property | what it does |
+|----------|-------------|
+| `#app` | targets the element with `id="app"` |
+| `.classname` | targets elements with that class |
+| `background` | sets the background color. colors can be hex values like `#100224` or names like `white` |
+| `margin: 0` | removes default browser spacing around the element |
+| `padding` | adds space inside the element |
+| `min-height: 100vh` | makes the element at least as tall as the screen |
+| `width` / `height` | sets the size of an element |
+| `color` | sets the text color |
+| `font-size` | sets how big the text is, `rem` is relative to the root font size |
+| `font-weight` | how thick the text is, 900 is the thickest |
+| `font-family` | which font to use |
+| `text-align` | aligns text left, right, or center |
+| `line-height` | spacing between lines of text |
+| `max-width` | prevents the element from getting wider than this value |
+| `margin: 0 auto` | centers a block element horizontally |
+| `text-decoration: underline` | adds underline to text |
+
+if any of this is unfamiliar, i'd recommend going through [MDN's CSS basics](https://developer.mozilla.org/en-US/docs/Learn/CSS/First_steps) first and coming back. this section focuses on two concepts you probably haven't seen before: **pseudo-elements** and **clip-path**. those are the ones that make this design work and the ones worth spending time on.
 ### body
 `margin: 0` removes the default white gap browsers add around the page. `min-height: 100vh` means the body is at least as tall as the screen. `vh` stands for viewport height. `position: relative` is needed so the side decorations know where to position themselves.
 
+you should be able to see the differene here: 
+![screenshot](./guideAssets/2026-05-26.png)
+![screenshot](./guideAssets/2026-05-26%20(1).png)
+
 ### body::before and body::after
-these are called **pseudo-elements** -- they are fake elements that css creates without you writing any html. `content: ''` is required to make them appear even though they have no text. `position: fixed` keeps them stuck to the sides even when you scroll. `z-index: -1` puts them behind all your content.
+these are called **pseudo-elements**,  they are fake elements that css creates without you writing any html. `content: ''` is required to make them appear even though they have no text. `position: fixed` keeps them stuck to the sides even when you scroll. `z-index: -1` puts them behind all your content.
+![screenshot](./guideAssets/BeFunky-collage%20(1).jpg)
 
 ### clip-path: polygon()
-this is the fun part. `clip-path` cuts an element into any shape you define using coordinates. `polygon()` takes a list of x% y% points and draws a shape through them. the zigzag effect comes from alternating between `85% 2.5%` and `100% 5%` -- one point is slightly inward, the next is at the full edge, creating the zigzag pattern.
+this is the fun one. by default `body::before` and `body::after` are just plain rectangles. `clip-path: polygon()` cuts them into any shape you want by defining a list of points. `clip-path` cuts an element into any shape you define using coordinates. `polygon()` think of it like this: you have a rectangular piece of paper and you're cutting along a zigzag line with scissors. `clip-path` is the scissors, `polygon()` is the path you cut along. 
 
-### @media (max-width: 600px)
-this is a **media query** -- it applies styles only when the screen is narrower than 600px, meaning phones. we hide the side decorations on mobile so they don't overlap the content on small screens.
-
+the points are written as `x% y%` pairs going around the shape:
+```css
+clip-path: polygon(
+  0 0,       /* top left corner */
+  100% 0,    /* top right corner */
+  85% 2.5%,  /* first zigzag inward */
+  100% 5%,   /* back out */
+  85% 7.5%,  /* inward again */
+  100% 10%,  /* back out */
+  /* ...repeating all the way down... */
+  0 100%     /* bottom left corner */
+);
+```
+if you wanted curves instead you would use `path()`, but that's a lot more complex and straight lines are enough for our zigzag.
+![screenshot](./guideAssets/2026-05-26%20(9).png)
+now i know what you're thinking. nobody writes 40 points by hand. and you're right, this is one of those cases where you can take help from some resources like: use of [Clippy](https://bennettfeely.com/clippy/) to create your own clip-path shape. it is a visual editor where you drag points around and it generates the css values for you. no manual coordinate writing needed.
 ### google fonts
-add this in your `index.html` inside `<head>` to load your fonts:
+
+google fonts is a free library of fonts you can use in any project without downloading anything. you just add a link in your html and use the font name in css.
+
+go to [fonts.google.com](https://fonts.google.com), pick any font you like, click "get font" and it will give you a link to paste in your html. once you have selected your fonts on google fonts, click **"get font"** then **"get embed code"** and it will give you the exact link to paste in your html. no need to copy it manually.
+
+in my case i am using:
+- [Orbitron](https://fonts.google.com/specimen/Orbitron) for the title.
+- [Black Ops One](https://fonts.google.com/specimen/Black+Ops+One) for the body text.
+add this in your `index.html`, inside `<head>` before your css link:
+
 ```html
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Black+Ops+One&display=swap" rel="stylesheet">
 ```
-then use them in css with `font-family: 'Orbitron', sans-serif`. the `sans-serif` at the end is a fallback -- if google fonts fails to load, the browser uses its default sans-serif font instead.
+then use them in css with `font-family: 'Orbitron', sans-serif`. the `sans-serif` at the end is a fallback. if google fonts fails to load, the browser uses its default sans-serif font instead.
+
+```css
+h1 {
+  font-family: 'Orbitron', sans-serif;
+}
+
+p {
+  font-family: 'Black Ops One', sans-serif;
+}
+```
+
+![screenshot](./guideAssets/2026-05-26%20(12).png)
+
+### @media (max-width: 600px)
+one last thing. on small screens the side strips overlap the content. we hide them on phones using a media query:
+
+```css
+@media (max-width: 600px) {
+  body::before,
+  body::after {
+    display: none;
+  }
+}
+```
+
+a **media query** applies styles only when a condition is true. in this case when the screen is narrower than 600px. resize your browser window and watch the strips disappear. that's it, no javascript needed.
+![mobile view](./guideassets/2026-05-26%20(6).png)
+
+and that's a wrap on the styling! here is what the final project looks like:
+
+![screenshot](./guideAssets/2026-05-26%20(7).png)
+
+not bad for a first project right? you just built a real website that talks to a nasa API, handles live data, and looks good doing it. now go make it your own, change the colors, try a different API, add a date picker. the hard part is done, the fun part is up to you :D
