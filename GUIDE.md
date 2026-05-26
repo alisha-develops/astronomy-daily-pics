@@ -83,6 +83,132 @@ dist
 
 this tells git to never upload your real API key, the `node_modules` folder (too large, reinstalled via `npm install`), or the `dist` folder (auto generated on build).
 
+## pushing to github and deploying
+if you already know how to deploy and push to github, then you can skip this part!
+### push to github
+
+create a new repository on github. go to [github.com](https://github.com), click `+` then "new repository". name it whatever your project is called, set it to public, and **do not add a README or any other files**. then run these in your terminal one by one:
+
+```bash
+git init
+git remote add origin https://github.com/yourusername/your-repo-name.git
+git branch -M main
+git add .
+git commit -m "first commit"
+git push -u origin main
+```
+
+check your repo on github after pushing. make sure `.env` is **not** there. you should see `.env.example` but never `.env`.
+
+### configure vite for github pages
+
+create `vite.config.js` in your project root and replace `your-repo-name` with your actual repo name:
+
+```javascript
+import { defineConfig } from 'vite'
+
+export default defineConfig({
+  base: '/your-repo-name/',
+})
+```
+
+this tells vite where your site will be hosted. without it your assets won't load on github pages.
+
+### store your api key as a github secret
+
+since `.env` never goes to github, you store the key there instead:
+
+1. go to your repo → settings → secrets and variables → actions
+2. click "new repository secret"
+3. name: `VITE_NASA_API_KEY`
+4. value: your actual nasa api key
+
+### create the deploy workflow
+
+this is the part that automates everything. every time you push to `main`, github will automatically build your project and deploy it.  no manual steps needed.
+
+i got this workflow from the [official vite deployment docs](https://vitejs.dev/guide/static-deploy#github-pages) and adapted it slightly. if you want to understand what each line does, the [github actions docs](https://docs.github.com/en/actions) break it all down. 
+
+create `.github/workflows/deploy.yml` in your project and paste this:
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - run: npm install
+
+      - run: npm run build
+        env:
+          VITE_NASA_API_KEY: ${{ secrets.VITE_NASA_API_KEY }}
+
+      - uses: actions/configure-pages@v3
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+      - uses: actions/deploy-pages@v4
+        id: deployment
+```
+
+### enable github pages
+
+1. go to your repo → settings → pages
+2. under "source" select "github actions"
+3. save
+
+then push everything:
+
+```bash
+git add .
+git commit -m "add deploy workflow"
+git push
+```
+
+go to the actions tab on github and watch it run. when you see a green checkmark your site is live at: https://yourusername.github.io/your-repo-name/
+
+### common errors and fixes
+
+| error | cause | fix |
+|-------|-------|-----|
+| `cannot set properties of null` | `querySelector` found nothing | make sure `<div id="app">` exists in `index.html` and the script tag is below it in `<body>` |
+| `api key is undefined` | `.env` is missing or vite wasn't restarted | create `.env` with your key and restart `npm run dev` |
+| blank page with no errors | fetch failed  | add `.catch(err => console.log(err))` to see the error |
+| still seeing vite demo page | old scaffold code still in `main.js` or `style.css` | select all and replace completely |
+| 404 on github pages | wrong base path in `vite.config.js` | make sure `base` matches your exact repo name |
+| `EPERM` error on windows | antivirus locking `node_modules` | run terminal as administrator |
+
+one last thing: this workflow only runs when you push to `main`. so every time you make changes to your project, commit and push:
+
+```bash
+git add .
+git commit -m "describe what you changed"
+git push
+```
+
+github will automatically rebuild and redeploy your site. you don't have to touch the workflow again. it just runs in the background every time. think of it as your personal deployment robot that wakes up every time you push code. 
+
 that was all the setup you needed before writing any code. make sure your folder looks something like this before moving on:
 ![screenshot](./guideAssets/filestructure.png)
 
@@ -393,7 +519,7 @@ if any of this is unfamiliar, i'd recommend going through [MDN's CSS basics](htt
 ### body
 `margin: 0` removes the default white gap browsers add around the page. `min-height: 100vh` means the body is at least as tall as the screen. `vh` stands for viewport height. `position: relative` is needed so the side decorations know where to position themselves.
 
-you should be able to see the differene here: 
+you should be able to see the difference here: 
 ![screenshot](./guideAssets/2026-05-26.png)
 ![screenshot](./guideAssets/2026-05-26%20(1).png)
 
