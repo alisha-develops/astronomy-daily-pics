@@ -20,7 +20,7 @@ if you paste it directly into your javascript file and push to github, anyone ca
 
 **but** vite's `.env` is not bulletproof security. since this is a frontend project, your api key is technically still embedded in the built javascript files that get deployed. anyone who knows where to look could find it. for a free public api like nasa's apod, this is completely fine. the worst case is someone uses your key and hits the rate limit.
 
-for sensitive apis (payments, private data, anything that costs money per request) you would never do this. you would build a backend server that makes the api call and sends only the data to the browser, it will keep the key completely hidden. but that's a whole other topic.
+for sensitive apis (payments, private data, anything that costs money per request) you would never do this. you would build a backend server that makes the api call and sends only the data to the browser which will keep the key completely hidden. but that's a whole other topic.
 
 for this project, vite gives us three things:
 - a clean way to manage keys across local and deployed environments
