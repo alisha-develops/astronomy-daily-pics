@@ -600,8 +600,11 @@ one last thing. on small screens the side strips overlap the content. we hide th
 a **media query** applies styles only when a condition is true. in this case when the screen is narrower than 600px. resize your browser window and watch the strips disappear. that's it, no javascript needed.
 ![mobile view](./guideassets/2026-05-26%20(6).png)
 
-and that's a wrap on the styling! here is what the final project looks like:
-
+and that's a wrap on the styling! 
+## that's it!
+here is what the final project looks like:
 ![screenshot](./guideAssets/2026-05-26%20(7).png)
 
 not bad for a first project right? you just built a real website that talks to a nasa API, handles live data, and looks good doing it. now go make it your own, change the colors, try a different API, add a date picker. the hard part is done, the fun part is up to you :D
+
+<!-- if anything here didn't make sense, or if you got stuck on a weird path error, just hit me up on on slack: **@Alisha**  -->
