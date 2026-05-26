@@ -598,7 +598,7 @@ one last thing. on small screens the side strips overlap the content. we hide th
 ```
 
 a **media query** applies styles only when a condition is true. in this case when the screen is narrower than 600px. resize your browser window and watch the strips disappear. that's it, no javascript needed.
-![mobile view](./guideassets/2026-05-26%20(6).png)
+![screenshot](./guideassets/2026-05-26(6).png)
 
 and that's a wrap on the styling! 
 ## that's it!
