@@ -6,8 +6,7 @@ this project is as an official guide and exemplar build for my mission of web de
 
 ## what i did & why it's beginner friendly
 
-what i did & why it's a beginner guide
-since i designed this repo to be a learning blueprint for everyone else in the stardance program, i intentionally kept the features as simple and clean as possible. i wanted to strip away the noise so the core logic is incredibly easy to read and recreate, which is exactly why it serves as a great beginner project.
+i designed this repo to be a learning blueprint for everyone else in the stardance program, i intentionally kept the features as simple and clean as possible. i wanted to strip away the noise so the core logic is incredibly easy to read and recreate, which is exactly why it serves as a great beginner project.
 
 here is exactly what i implemented in the project pipeline:
 - instead of writing old-school plain html, i initialized a modern vanilla js vite project sandbox so we can run a real local development server.
