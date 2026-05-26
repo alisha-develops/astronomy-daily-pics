@@ -16,7 +16,18 @@ i have divided this guide into small stages so nothing gets tangled, and have at
 ## why are we using vite instead of plain html/css/js?
 great question. you could technically write this in a plain html file, but you would immediately run into a problem, where do you put your API key?
 
-if you paste it directly into your javascript file and push to github, anyone can see it. that's bad practice even for a free API. vite solves this with `.env` files and `import.meta.env`, which is the standard modern workflow for frontend projects. it also gives you a real local server so your API requests actually work, and handles building and deploying your code to github pages.
+if you paste it directly into your javascript file and push to github, anyone can see it. that's bad practice even for a free API. we solve this by using a `.env` file to store the key locally and adding it to a `.gitignore` file so it never gets uploaded to github. vite then lets us access that hidden key using `import.meta.env`, which is the standard modern workflow for frontend projects. it also gives you a real local server so your API requests actually work, and handles building and deploying your code to github pages.
+
+**but** vite's `.env` is not bulletproof security. since this is a frontend project, your api key is technically still embedded in the built javascript files that get deployed. anyone who knows where to look could find it. for a free public api like nasa's apod, this is completely fine. the worst case is someone uses your key and hits the rate limit.
+
+for sensitive apis (payments, private data, anything that costs money per request) you would never do this. you would build a backend server that makes the api call and sends only the data to the browser, it will keep the key completely hidden. but that's a whole other topic.
+
+for this project, vite gives us three things:
+- a clean way to manage keys across local and deployed environments
+- a real local server at `http://localhost:5173` so api requests actually work
+- a build tool that bundles and optimizes our code for github pages
+
+that's why we use it.
 
 ## create a vite project
 open the folder where you want to create your project in vs code, open the terminal and run:
@@ -56,7 +67,7 @@ vite gives you a demo to show it works. every developer deletes these files and 
 - `src/counter.js`
 - `src/javascript.svg`
 - `public/vite.svg`
-- remove boiled code from `./src/main.js` and ./src/style.css`
+- remove boilerplate code from `./src/main.js` and `./src/style.css`
 
 ## get and store your API key safely
 go to [api.nasa.gov](https://api.nasa.gov), fill out the basic form and they will email you a free key instantly. once you have it, create a `.env` file in the root of your project (same level as `package.json`).
