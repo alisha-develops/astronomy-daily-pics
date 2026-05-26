@@ -16,3 +16,6 @@ document.querySelector("#app").innerHTML= `
     ${media}
     <p>${data.explanation}</p>`;
 })
+.catch(err => {
+    document.querySelector("#app").innerHTML = `<p>Error: ${err.message}</p>`;
+});
