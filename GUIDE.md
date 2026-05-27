@@ -136,11 +136,27 @@ since `.env` never goes to github, you store the key there instead:
 
 ### create the deploy workflow
 
-this is the part that automates everything. every time you push to `main`, github will automatically build your project and deploy it.  no manual steps needed.
+okay so think about what actually needs to happen to get your site live. your code needs to be built, your secret key needs to get in somehow without being in your public code, and the final output needs to end up on github pages. how would you automate all of that?
+ 
+take a second and actually think about the steps before reading on.
+ 
+here's what needs to happen in order:
+ 
+1. something needs to trigger the whole process
+2. a machine needs to install your dependencies and build your project
+3. your API key needs to get in during that build without ever touching your public code
+4. the built output needs to get pushed live
 
-i got this workflow from the [official vite deployment docs](https://vitejs.dev/guide/static-deploy#github-pages) and adapted it slightly. if you want to understand what each line does, the [github actions docs](https://docs.github.com/en/actions) break it all down. 
+that's exactly what this file does. and i didn't write it from scratch either. i grabbed it from the [official vite deployment docs](https://vitejs.dev/guide/static-deploy#github-pages) and tweaked it slightly. that's genuinely how most developers handle this stuff, you find something that works, understand the key parts, and adapt it.
+ 
+github doesn't create this file for you by the way. you're making it yourself. before you paste it, here's where each of those 4 steps lives inside the file so you know what to look for:
+ 
+- `on: push: branches: [main]`: this is what kicks everything off. if you ever want it to trigger on a different branch, just change `main` to whatever your branch is called
+- `run: npm install` and `run: npm run build`: fresh machine, your dependencies, your build. if your project uses a different build command like `npm run generate`, you would change it here
+- `VITE_NASA_API_KEY: ${{ secrets.VITE_NASA_API_KEY }}`: your key gets pulled in from the secret you stored earlier, never touching your public code. if your project has multiple API keys or different variable names, add more lines in the same format right below this one
+- `path: dist` and `actions/deploy-pages@v4`: grabs what vite built and pushes it live. `dist` is vite's default output folder. if you ever change that in your vite config, update it here too
 
-create `.github/workflows/deploy.yml` in your project and paste this:
+the rest of the lines are just required paperwork (boilerplate) for github actions. you don't need to touch them. now create `.github/workflows/deploy.yml` and paste this:
 
 ```yaml
 name: Deploy to GitHub Pages
