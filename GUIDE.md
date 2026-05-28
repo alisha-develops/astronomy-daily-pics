@@ -242,6 +242,14 @@ that was all the setup you needed before writing any code. make sure your folder
 **now the fun part! let's write some code :D**
 
 ## make sure your index.html looks like this:
+if this structure looks confusing, don't worry. most of it is standard HTML boilerplate that every webpage starts with:
+
+`<!doctype html>` tells the browser to use modern HTML
+`<html lang="en">` is the root of the page and sets the language
+`<head>` contains invisible metadata like the page title and settings
+`<body>` contains everything you actually see on the page
+
+you usually won't touch most of this very often in small projects.
 ```html
 <!doctype html>
 <html lang="en">
