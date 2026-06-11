@@ -1,6 +1,16 @@
 # my nasa daily astronomy image site (APOD API) 
 
-hi! welcome to my project. i built a live space dashboard that talks directly to nasa's computers to grab and display the astronomy picture of the day (apod). it automatically pulls today's official astronomy title, description, and handles switching between high-res photos and youtube video embeds depending on what nasa uploads that day.
+<table>
+  <tr>
+    <td valign="top" width="50%">
+      <p>hi! welcome to my project. i built a live space dashboard that talks directly to nasa's computers to grab and display the astronomy picture of the day (apod).</p>
+      <p>it automatically pulls today's official astronomy title, description, and handles switching between high-res photos and youtube video embeds depending on what nasa uploads that day.</p>
+    </td>
+    <td valign="top" width="50%">
+      <img src="https://cdn.hackclub.com/019e7ab0-8296-7103-b85f-1821f63f7e45/2026-05-26%20(7).png" alt="NASA APOD Dashboard">
+    </td>
+  </tr>
+</table>
 
 this project is as an official guide and exemplar build for my mission of web development over at the hack club stardance mission (https://stardance.hackclub.com/). since this is literally a guided project example for the mission, the code is intentionally stripped down to the absolute essentials.
 
