@@ -1,3 +1,4 @@
+> note for the reviewer: ~7 straight went entirely into the markdown guide. cuz its intentionally a super beginner project, i had to deliberately write js code that was wrong to show examples of what could go wrong, and then walk through how to fix it using different approaches (this is also why js took 2 hr). pls have a look at  [`guide.md`](./GUIDE.md)! tysm :D**
 # my nasa daily astronomy image site (APOD API) 
 
 <table>
